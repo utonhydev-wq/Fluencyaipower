@@ -232,6 +232,54 @@ export const ProfileSettingsView: React.FC<ProfileSettingsViewProps> = ({
           </div>
         </div>
 
+        {/* 4-digit PIN Quick Access Configuration */}
+        <div className="pt-2 border-t border-slate-800 space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
+                <Shield className="w-3.5 h-3.5 text-sky-400" />
+                <span>PIN de Acesso Rápido (4 Dígitos)</span>
+              </h4>
+              <p className="text-[11px] text-slate-400">
+                {userProfile.securityPin ? 'PIN ativo para desbloqueio rápido no celular.' : 'Nenhum PIN configurado. Configure para entrar em segundos.'}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <input
+              type="password"
+              maxLength={4}
+              placeholder={userProfile.securityPin ? '••••' : 'Novo PIN (4 dígitos)'}
+              value={userProfile.securityPin ? '••••' : ''}
+              readOnly
+              className="w-32 px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-sm text-center font-mono text-white tracking-widest"
+            />
+            <button
+              type="button"
+              onClick={() => {
+                const newPin = prompt('Digite um novo PIN numérico de 4 dígitos (ou deixe vazio para remover):');
+                if (newPin === null) return;
+                const trimmed = newPin.trim();
+                if (trimmed === '') {
+                  const updated = { ...userProfile, securityPin: undefined };
+                  onUpdateProfile(updated);
+                  alert('PIN removido com sucesso!');
+                } else if (/^\d{4}$/.test(trimmed)) {
+                  const updated = { ...userProfile, securityPin: trimmed };
+                  onUpdateProfile(updated);
+                  alert('PIN de 4 dígitos salvo com sucesso!');
+                } else {
+                  alert('O PIN deve conter exatamente 4 números (ex: 1234).');
+                }
+              }}
+              className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-xs font-bold text-sky-400 transition"
+            >
+              {userProfile.securityPin ? 'Alterar / Remover PIN' : 'Criar PIN de 4 Dígitos'}
+            </button>
+          </div>
+        </div>
+
         {/* Retake Placement Test */}
         <div className="pt-2 border-t border-slate-800 flex items-center justify-between">
           <div>

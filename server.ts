@@ -52,43 +52,100 @@ async function callGemini(contents: string, systemInstruction: string, jsonMode 
 
 // API Routes
 
-// 1. Private Tutor Chat
+// 1. Private Tutor Chat (Professional English Professor)
 app.post('/api/ai/tutor', async (req: Request, res: Response) => {
   try {
-    const { message, history = [], level = 'A1', mode = 'iniciante', userGoal = 'Geral' } = req.body;
+    const {
+      message,
+      history = [],
+      level = 'A1',
+      mode = 'iniciante',
+      userGoal = 'Geral',
+      teacherPersona = 'Adam'
+    } = req.body;
 
-    const systemPrompt = `Você é o tutor particular inteligente do EnglishFlow AI para falantes de português brasileiro.
-Nível atual do aluno: ${level} (Quadro Europeu Comum - CEFR).
+    const systemPrompt = `Você é um Professor Particular de Inglês de Elite (certificado Cambridge CELTA/Delta) do EnglishFlow AI, especializado em ensinar falantes nativos de português brasileiro do nível A1 ao C2.
+Seu perfil: Professor ${teacherPersona}, empático, didático, focado em destravar a fala e acelerar a fluência sem decoreba inútil.
+Nível CEFR do aluno: ${level}.
 Objetivo do aluno: ${userGoal}.
-Modo de ensino: ${mode}.
-Diretrizes:
-- No modo "iniciante", explique conceitos em português claro e acolhedor, use frases curtas e práticas em inglês com pronúncia aproximada quando útil.
-- No modo "imersao", responda predominantemente em inglês natural adequado ao nível ${level}, fornecendo vocabulário chave com tradução entre parênteses.
-- No modo "conversacao", aja como um nativo amigável batendo papo. Mantenha a conversa fluindo com perguntas abertas e corrija com gentileza no final se houver erro grave.
-- Não entregue respostas de exercícios de imediato; dê pistas graduais para o aluno deduzir.
-- Quando houver erro, mostre o porquê de forma simples e dê 1 ou 2 exemplos reais.
-- Mantenha respostas concisas (máximo 3 parágrafos curtos) para não sobrecarregar o estudante.`;
+Modo selecionado: ${mode} (iniciante: acolhedor com explicações em português; conversacao: diálogo fluido e incentivo; imersao: 90% em inglês com notas de vocabulário).
+
+Responda SEMPRE em JSON estrito com o seguinte esquema:
+{
+  "reply": "Sua resposta principal em inglês natural (ou bilíngue amigável se o aluno for A1/iniciante), falando diretamente com o aluno como professor.",
+  "portugueseExplanation": "Explicação didática clara em português do Brasil sobre o conceito, padrão linguístico ou significado prático.",
+  "correction": {
+    "originalText": "trecho com erro do aluno, se houver",
+    "correctedText": "como um nativo falaria de forma natural",
+    "explanation": "explicação curta do erro (ex: falsos cognatos como actually/atualmente, preposições 'listen to', evitar colocar 'i' mudo no fim das palavras)"
+  } ou null se a fala do aluno estiver correta,
+  "phoneticTip": "Dica fonética prática voltada para a boca de um brasileiro (ex: som do TH com ponta da língua entre os dentes, pronúncia do -ED no passado, som do R em car/water)",
+  "suggestedFollowUps": [
+    "Opção 1 simples para o aluno responder em inglês",
+    "Opção 2 mais expressiva",
+    "Opção 3 fazendo uma contra-pergunta"
+  ],
+  "savedVocabulary": [
+    {
+      "word": "Palavra ou phrasal verb chave",
+      "translation": "Tradução contextualizada",
+      "phonetic": "/transcrição fonética/",
+      "example": "Exemplo curto em frase real"
+    }
+  ]
+}
+
+Regras pedagógicas:
+1. Jamais faça o aluno se sentir envergonhado por errar. Erros são a matéria-prima do aprendizado.
+2. Identifique e corrija vícios comuns de brasileiros: traduzir 'ter x anos' como 'have x years' em vez de 'be x years old', esquecer o 'to' após 'listen', colocar som de vogal após consoantes mudas ('like-i', 'face-i').
+3. No final da sua fala ("reply"), faça sempre uma pergunta que instigue o aluno a continuar a conversa em inglês.`;
 
     const formattedHistory = (history as Array<{ role: string; text: string }>)
       .slice(-6)
-      .map(h => `${h.role === 'user' ? 'Aluno' : 'Tutor'}: ${h.text}`)
+      .map(h => `${h.role === 'user' ? 'Aluno' : 'Professor'}: ${h.text}`)
       .join('\n');
 
-    const prompt = `${formattedHistory ? `Histórico recente da conversa:\n${formattedHistory}\n\n` : ''}Mensagem do Aluno: "${message}"\nSua resposta como tutor:`;
+    const prompt = `${formattedHistory ? `Histórico recente do diálogo:\n${formattedHistory}\n\n` : ''}Mensagem do Aluno: "${message}"\nResponda em formato JSON estrito:`;
 
     if (!ai) {
-      // Offline fallback tutor response
       return res.json({
-        reply: `Excelente pergunta! No nível ${level}, o mais importante é focar no uso prático do padrão. Como estamos no modo offline de demonstração, tente formular uma frase completa usando palavras do seu vocabulário diário!`,
+        reply: `Hello! I'm delighted to practice with you. In English, when we want to express this, we often focus on practical phrases. What would you like to try saying next?`,
+        portugueseExplanation: `Excelente pergunta! No nível ${level}, o foco é entender a estrutura de forma prática, associando o significado direto sem tradução palavra por palavra.`,
+        correction: null,
+        phoneticTip: "Dica de pronúncia: Ao falar em inglês, relaxe os músculos faciais e preste atenção nas consoantes finais sem adicionar som de 'i'.",
+        suggestedFollowUps: [
+          "I want to practice my daily conversation.",
+          "Could you give me another example?",
+          "How do I say this in a business meeting?"
+        ],
+        savedVocabulary: [
+          {
+            word: "Keep going",
+            translation: "Continue firme / Não desista",
+            phonetic: "/kiːp ˈɡoʊ.ɪŋ/",
+            example: "Keep going, your English is improving every day!"
+          }
+        ]
       });
     }
 
-    const reply = await callGemini(prompt, systemPrompt, false);
-    res.json({ reply: reply || 'Estou aqui para ajudar com o seu inglês! Como posso esclarecer sua dúvida?' });
+    const text = await callGemini(prompt, systemPrompt, true);
+    try {
+      const parsed = JSON.parse(text || '{}');
+      res.json(parsed);
+    } catch {
+      res.json({
+        reply: text || 'Great to chat with you! Let\'s keep practicing.',
+        portugueseExplanation: 'Estou aqui para guiar sua pronúncia e gramática passo a passo.',
+        correction: null,
+        phoneticTip: null,
+        suggestedFollowUps: ['Tell me more', 'How do you say that?', 'Give me a challenge']
+      });
+    }
   } catch (error: any) {
     console.error('Tutor error:', error);
     res.status(500).json({
-      error: 'Não foi possível processar a resposta do tutor no momento.',
+      error: 'Não foi possível processar a resposta do professor no momento.',
       details: error.message,
     });
   }

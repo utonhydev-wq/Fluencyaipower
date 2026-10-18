@@ -37,7 +37,28 @@ export interface UserProfile {
   completedExerciseCount: number;
   accuracyRate: number;
   onboardingCompleted: boolean;
+  securityPin?: string; // 4-digit PIN for quick access
   createdAt: string;
+}
+
+export interface TutorCorrection {
+  originalText: string;
+  correctedText: string;
+  explanation: string;
+}
+
+export interface TutorResponseData {
+  reply: string;
+  portugueseExplanation?: string;
+  correction?: TutorCorrection | null;
+  phoneticTip?: string | null;
+  suggestedFollowUps?: string[];
+  savedVocabulary?: Array<{
+    word: string;
+    translation: string;
+    phonetic?: string;
+    example?: string;
+  }>;
 }
 
 export type ExerciseType =

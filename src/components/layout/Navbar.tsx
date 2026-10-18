@@ -2,22 +2,28 @@ import React, { useState } from 'react';
 import { UserProfile } from '../../types';
 import { useAuth } from '../../contexts/AuthContext';
 import { PWAInstallButton } from '../pwa/PWAInstallButton';
-import { Flame, Zap, Sparkles, User, Settings, LogIn, LogOut, CheckCircle } from 'lucide-react';
+import { Flame, Zap, Sparkles, User, Settings, LogIn, LogOut, CheckCircle, Lock, Smartphone, Monitor } from 'lucide-react';
 
 interface NavbarProps {
   userProfile: UserProfile;
   activeTab: string;
+  isMobileViewMode: boolean;
+  onToggleMobileView: () => void;
   onNavigate: (tabId: string) => void;
   onOpenSettings: () => void;
   onOpenAuth: () => void;
+  onLockWithPin?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   userProfile,
   activeTab,
+  isMobileViewMode,
+  onToggleMobileView,
   onNavigate,
   onOpenSettings,
-  onOpenAuth
+  onOpenAuth,
+  onLockWithPin
 }) => {
   const { currentUser, logout } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -165,6 +171,30 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <LogIn className="w-3.5 h-3.5" />
               <span>Entrar</span>
+            </button>
+          )}
+
+          {/* Mobile frame preview toggle for desktop */}
+          <button
+            onClick={onToggleMobileView}
+            className={`hidden lg:flex items-center gap-1 p-2 rounded-xl border text-xs transition ${
+              isMobileViewMode
+                ? 'bg-sky-600/20 text-sky-400 border-sky-500/40'
+                : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
+            }`}
+            title={isMobileViewMode ? 'Expandir para tela cheia' : 'Ativar simulação de celular (Mobile View)'}
+          >
+            {isMobileViewMode ? <Monitor className="w-3.5 h-3.5" /> : <Smartphone className="w-3.5 h-3.5" />}
+          </button>
+
+          {/* Quick PIN Lock Button */}
+          {onLockWithPin && (
+            <button
+              onClick={onLockWithPin}
+              className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-amber-400 hover:bg-slate-800 transition"
+              title="Bloquear com PIN de Segurança"
+            >
+              <Lock className="w-4 h-4" />
             </button>
           )}
 

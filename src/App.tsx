@@ -16,6 +16,7 @@ import { Navbar } from './components/layout/Navbar';
 import { BottomNav } from './components/layout/BottomNav';
 import { OfflineIndicator } from './components/pwa/OfflineIndicator';
 import { AuthModal } from './components/auth/AuthModal';
+import { PinAccessModal } from './components/auth/PinAccessModal';
 
 // Feature Views
 import { OnboardingModal } from './components/onboarding/OnboardingModal';
@@ -46,6 +47,17 @@ function MainApp() {
 
   // Active profile precedence: Firestore document if logged in, else local
   const effectiveProfile: UserProfile = firestoreProfile || localProfile;
+
+  // PIN lock state: if a PIN is set, require unlock
+  const [isPinLocked, setIsPinLocked] = useState<boolean>(() => {
+    return Boolean(storageService.getUserProfile().securityPin);
+  });
+  const [showPinModal, setShowPinModal] = useState<boolean>(() => {
+    return Boolean(storageService.getUserProfile().securityPin);
+  });
+
+  // Mobile View Frame Toggle (for mobile-first design)
+  const [isMobileViewMode, setIsMobileViewMode] = useState<boolean>(false);
 
   useEffect(() => {
     // Check daily streak on load
@@ -125,9 +137,31 @@ function MainApp() {
     }`}>
       
       {/* Onboarding Flow if not completed */}
-      {(!effectiveProfile.onboardingCompleted || showPlacementModal) && (
+      {(!effectiveProfile.onboardingCompleted || showPlacementModal) && !showPinModal && (
         <OnboardingModal onComplete={handleOnboardingComplete} />
       )}
+
+      {/* PIN Access & Security Lock Modal */}
+      <PinAccessModal
+        isOpen={showPinModal || (isPinLocked && Boolean(effectiveProfile.securityPin))}
+        savedPin={effectiveProfile.securityPin}
+        userName={effectiveProfile.name}
+        onSuccess={(pin) => {
+          if (pin && !effectiveProfile.securityPin) {
+            // Save newly created PIN
+            handleUpdateProfile({
+              ...effectiveProfile,
+              securityPin: pin
+            });
+          }
+          setIsPinLocked(false);
+          setShowPinModal(false);
+        }}
+        onOpenFullAuth={() => {
+          setShowPinModal(false);
+          setShowAuthModal(true);
+        }}
+      />
 
       {/* Interactive Lesson Player Overlay */}
       {activeLesson && (
@@ -144,109 +178,121 @@ function MainApp() {
         onClose={() => setShowAuthModal(false)}
       />
 
-      {/* Top Navbar */}
-      <Navbar
-        userProfile={effectiveProfile}
-        activeTab={activeTab}
-        onNavigate={(tab) => {
-          soundService.playClick();
-          setActiveTab(tab);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
-        onOpenSettings={() => {
-          soundService.playClick();
-          setActiveTab('profile');
-        }}
-        onOpenAuth={() => {
-          soundService.playClick();
-          setShowAuthModal(true);
-        }}
-      />
+      {/* Mobile Design Wrapper (allows desktop user to view as an iPhone/Android device or full screen) */}
+      <div className={isMobileViewMode ? "max-w-[430px] mx-auto my-4 rounded-[40px] border-[6px] border-slate-800 shadow-2xl overflow-hidden flex flex-col min-h-[92vh] bg-slate-950 relative" : "contents"}>
 
-      {/* Main Content Area */}
-      <main className="flex-1 pb-20 md:pb-8">
-        
-        {/* Daily Routine Guided Runner */}
-        {isRoutineActive ? (
-          <DailyRoutineSession
-            userProfile={effectiveProfile}
-            onNavigateToTab={(tab) => {
-              setIsRoutineActive(false);
-              setActiveTab(tab);
-            }}
-            onClose={() => setIsRoutineActive(false)}
-          />
-        ) : (
-          <>
-            {activeTab === 'dashboard' && (
-              <DashboardView
-                userProfile={effectiveProfile}
-                flashcards={flashcards}
-                onStartLesson={(lesson) => setActiveLesson(lesson)}
-                onStartRoutine={() => setIsRoutineActive(true)}
-                onNavigate={(tab) => {
-                  soundService.playClick();
-                  setActiveTab(tab);
-                }}
-              />
-            )}
-
-            {activeTab === 'track' && (
-              <CurriculumTrackView
-                userProfile={effectiveProfile}
-                onSelectLesson={(lesson) => setActiveLesson(lesson)}
-              />
-            )}
-
-            {activeTab === 'tutor' && (
-              <AITutorView userProfile={effectiveProfile} />
-            )}
-
-            {activeTab === 'roleplay' && (
-              <RoleplayView userProfile={effectiveProfile} />
-            )}
-
-            {activeTab === 'vocab' && (
-              <VocabularySRSView userProfile={effectiveProfile} />
-            )}
-
-            {activeTab === 'pronunciation' && (
-              <PronunciationStudio userProfile={effectiveProfile} />
-            )}
-
-            {activeTab === 'progress' && (
-              <ProgressAnalyticsView userProfile={effectiveProfile} />
-            )}
-
-            {activeTab === 'achievements' && (
-              <AchievementsView userProfile={effectiveProfile} />
-            )}
-
-            {activeTab === 'profile' && (
-              <ProfileSettingsView
-                userProfile={effectiveProfile}
-                onUpdateProfile={handleUpdateProfile}
-                onRetakePlacement={() => setShowPlacementModal(true)}
-                onOpenAuth={() => setShowAuthModal(true)}
-              />
-            )}
-          </>
-        )}
-
-      </main>
-
-      {/* Mobile Bottom Navigation Bar */}
-      {!activeLesson && (
-        <BottomNav
+        {/* Top Navbar */}
+        <Navbar
+          userProfile={effectiveProfile}
           activeTab={activeTab}
+          isMobileViewMode={isMobileViewMode}
+          onToggleMobileView={() => setIsMobileViewMode(prev => !prev)}
           onNavigate={(tab) => {
             soundService.playClick();
-            setIsRoutineActive(false);
             setActiveTab(tab);
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
+          onOpenSettings={() => {
+            soundService.playClick();
+            setActiveTab('profile');
+          }}
+          onOpenAuth={() => {
+            soundService.playClick();
+            setShowAuthModal(true);
+          }}
+          onLockWithPin={() => {
+            soundService.playClick();
+            setIsPinLocked(true);
+            setShowPinModal(true);
+          }}
         />
-      )}
+
+        {/* Main Content Area */}
+        <main className="flex-1 pb-20 md:pb-8">
+          
+          {/* Daily Routine Guided Runner */}
+          {isRoutineActive ? (
+            <DailyRoutineSession
+              userProfile={effectiveProfile}
+              onNavigateToTab={(tab) => {
+                setIsRoutineActive(false);
+                setActiveTab(tab);
+              }}
+              onClose={() => setIsRoutineActive(false)}
+            />
+          ) : (
+            <>
+              {activeTab === 'dashboard' && (
+                <DashboardView
+                  userProfile={effectiveProfile}
+                  flashcards={flashcards}
+                  onStartLesson={(lesson) => setActiveLesson(lesson)}
+                  onStartRoutine={() => setIsRoutineActive(true)}
+                  onNavigate={(tab) => {
+                    soundService.playClick();
+                    setActiveTab(tab);
+                  }}
+                />
+              )}
+
+              {activeTab === 'track' && (
+                <CurriculumTrackView
+                  userProfile={effectiveProfile}
+                  onSelectLesson={(lesson) => setActiveLesson(lesson)}
+                />
+              )}
+
+              {activeTab === 'tutor' && (
+                <AITutorView userProfile={effectiveProfile} />
+              )}
+
+              {activeTab === 'roleplay' && (
+                <RoleplayView userProfile={effectiveProfile} />
+              )}
+
+              {activeTab === 'vocab' && (
+                <VocabularySRSView userProfile={effectiveProfile} />
+              )}
+
+              {activeTab === 'pronunciation' && (
+                <PronunciationStudio userProfile={effectiveProfile} />
+              )}
+
+              {activeTab === 'progress' && (
+                <ProgressAnalyticsView userProfile={effectiveProfile} />
+              )}
+
+              {activeTab === 'achievements' && (
+                <AchievementsView userProfile={effectiveProfile} />
+              )}
+
+              {activeTab === 'profile' && (
+                <ProfileSettingsView
+                  userProfile={effectiveProfile}
+                  onUpdateProfile={handleUpdateProfile}
+                  onRetakePlacement={() => setShowPlacementModal(true)}
+                  onOpenAuth={() => setShowAuthModal(true)}
+                />
+              )}
+            </>
+          )}
+
+        </main>
+
+        {/* Mobile Bottom Navigation Bar */}
+        {!activeLesson && (
+          <BottomNav
+            activeTab={activeTab}
+            onNavigate={(tab) => {
+              soundService.playClick();
+              setIsRoutineActive(false);
+              setActiveTab(tab);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+          />
+        )}
+
+      </div>
 
       {/* PWA Offline Connectivity Indicator */}
       <OfflineIndicator />

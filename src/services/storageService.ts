@@ -1,4 +1,4 @@
-import { UserProfile, Flashcard, Achievement, CEFRLevel, DailyTimeMinutes } from '../types';
+import { UserProfile, Flashcard, FlashcardCategory, Achievement, CEFRLevel, DailyTimeMinutes } from '../types';
 import { INITIAL_FLASHCARDS } from '../data/flashcards';
 import { INITIAL_ACHIEVEMENTS } from '../data/achievements';
 import { soundService } from './soundService';
@@ -76,6 +76,38 @@ export const storageService = {
     } catch (e) {
       console.error('Failed to save flashcards:', e);
     }
+  },
+
+  addCustomFlashcard(cardData: {
+    english: string;
+    portuguese: string;
+    phonetic?: string;
+    category?: FlashcardCategory;
+    exampleSentence?: string;
+    exampleTranslation?: string;
+  }): Flashcard {
+    const cards = this.getFlashcards();
+    const newCard: Flashcard = {
+      id: `custom_${Date.now()}`,
+      english: cardData.english,
+      portuguese: cardData.portuguese,
+      phonetic: cardData.phonetic || '',
+      partOfSpeech: 'Expressão',
+      exampleSentence: cardData.exampleSentence || `${cardData.english} is a great phrase to practice.`,
+      exampleTranslation: cardData.exampleTranslation || '',
+      category: cardData.category || 'conversacao',
+      level: 'A1',
+      isFavorite: false,
+      intervalDays: 1,
+      repetitionCount: 0,
+      easeFactor: 2.5,
+      mistakeCount: 0,
+      difficultyScore: 'novo',
+      nextReviewDate: new Date().toISOString()
+    };
+    cards.unshift(newCard);
+    this.saveFlashcards(cards);
+    return newCard;
   },
 
   getAchievements(): Achievement[] {

@@ -116,5 +116,45 @@ export const reviewService = {
     } catch (error) {
       handleFirestoreError(error, OperationType.UPDATE, path);
     }
+  },
+
+  // Add custom card to Firestore
+  async addCustomCard(uid: string, cardData: {
+    english: string;
+    portuguese: string;
+    phonetic?: string;
+    category?: Flashcard['category'];
+    exampleSentence?: string;
+    exampleTranslation?: string;
+  }): Promise<Flashcard> {
+    const id = `custom_${Date.now()}`;
+    const path = `users/${uid}/vocabulary/${id}`;
+    const newCard: Flashcard = {
+      id,
+      english: cardData.english,
+      portuguese: cardData.portuguese,
+      phonetic: cardData.phonetic || '',
+      partOfSpeech: 'Expressão',
+      exampleSentence: cardData.exampleSentence || `${cardData.english} is a great phrase to practice.`,
+      exampleTranslation: cardData.exampleTranslation || '',
+      category: cardData.category || 'conversacao',
+      level: 'A1',
+      isFavorite: false,
+      intervalDays: 1,
+      repetitionCount: 0,
+      easeFactor: 2.5,
+      mistakeCount: 0,
+      difficultyScore: 'novo',
+      nextReviewDate: new Date().toISOString()
+    };
+    try {
+      await setDoc(doc(db, 'users', uid, 'vocabulary', id), {
+        ...newCard,
+        updatedAt: new Date().toISOString()
+      });
+      return newCard;
+    } catch (error) {
+      handleFirestoreError(error, OperationType.CREATE, path);
+    }
   }
 };

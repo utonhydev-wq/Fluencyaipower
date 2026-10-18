@@ -1,8 +1,10 @@
+import { TutorResponseData } from '../types';
 import { speechService } from './speechService';
 
 export interface TutorMessage {
   role: 'user' | 'assistant';
   text: string;
+  data?: TutorResponseData;
 }
 
 export const aiService = {
@@ -12,7 +14,8 @@ export const aiService = {
     level?: string;
     mode?: 'iniciante' | 'imersao' | 'conversacao';
     userGoal?: string;
-  }): Promise<{ reply: string }> {
+    teacherPersona?: string;
+  }): Promise<TutorResponseData> {
     try {
       const res = await fetch('/api/ai/tutor', {
         method: 'POST',
@@ -24,7 +27,23 @@ export const aiService = {
     } catch (err: any) {
       console.warn('Backend tutor fallback:', err);
       return {
-        reply: `Excelente pergunta! No nível ${params.level || 'A1'}, o segredo é praticar essa estrutura em voz alta com exemplos do seu dia a dia. Como você formularia uma frase com esse conceito?`,
+        reply: `That is a great question! At level ${params.level || 'A1'}, the key is to build practical phrases step by step. What would you like to say next?`,
+        portugueseExplanation: `Excelente pergunta! No nível ${params.level || 'A1'}, o segredo é praticar essa estrutura em voz alta com exemplos do seu dia a dia.`,
+        correction: null,
+        phoneticTip: "Dica: Em inglês, mantenha as consoantes finais nítidas sem adicionar 'i' no fim.",
+        suggestedFollowUps: [
+          "Can you give me an example?",
+          "How do I pronounce this correctly?",
+          "Let's practice another phrase."
+        ],
+        savedVocabulary: [
+          {
+            word: "Step by step",
+            translation: "Passo a passo",
+            phonetic: "/step baɪ step/",
+            example: "You will achieve fluency step by step."
+          }
+        ]
       };
     }
   },
