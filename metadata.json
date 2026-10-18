@@ -1,0 +1,10 @@
+{
+  "name": "EnglishFlow AI",
+  "description": "Plataforma inteligente de aprendizado de inglês para falantes de português do nível iniciante ao avançado, com tutor de IA, conversação real, pronúncia e repetição espaçada.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

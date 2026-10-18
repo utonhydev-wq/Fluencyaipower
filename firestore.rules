@@ -1,0 +1,100 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Default deny catch-all safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // User Profile document
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false; // Users cannot list other user profiles
+
+      allow create: if isOwner(userId)
+        && request.resource.data.uid == userId
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 100
+        && request.resource.data.email is string
+        && request.resource.data.email.size() <= 255;
+
+      allow update: if isOwner(userId)
+        && request.resource.data.uid == userId
+        && (!('name' in request.resource.data) || (request.resource.data.name is string && request.resource.data.name.size() <= 100))
+        && (!('email' in request.resource.data) || (request.resource.data.email is string && request.resource.data.email.size() <= 255));
+
+      allow delete: if isOwner(userId);
+
+      // Subcollection: progress/summary
+      match /progress/{summaryId} {
+        allow get: if isOwner(userId) && isValidId(summaryId);
+        allow list: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidId(summaryId);
+        allow delete: if isOwner(userId);
+      }
+
+      // Subcollection: lessonProgress
+      match /lessonProgress/{lessonId} {
+        allow get: if isOwner(userId) && isValidId(lessonId);
+        allow list: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidId(lessonId);
+        allow delete: if isOwner(userId);
+      }
+
+      // Subcollection: vocabulary (SRS cards)
+      match /vocabulary/{wordId} {
+        allow get: if isOwner(userId) && isValidId(wordId);
+        allow list: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidId(wordId);
+        allow delete: if isOwner(userId);
+      }
+
+      // Subcollection: activityHistory
+      match /activityHistory/{activityId} {
+        allow get: if isOwner(userId) && isValidId(activityId);
+        allow list: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidId(activityId);
+        allow delete: if isOwner(userId);
+      }
+
+      // Subcollection: dailyStats
+      match /dailyStats/{date} {
+        allow get: if isOwner(userId) && isValidId(date);
+        allow list: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidId(date);
+        allow delete: if isOwner(userId);
+      }
+
+      // Subcollection: achievements
+      match /achievements/{achievementId} {
+        allow get: if isOwner(userId) && isValidId(achievementId);
+        allow list: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidId(achievementId);
+        allow delete: if isOwner(userId);
+      }
+
+      // Subcollection: conversationHistory
+      match /conversationHistory/{conversationId} {
+        allow get: if isOwner(userId) && isValidId(conversationId);
+        allow list: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidId(conversationId);
+        allow delete: if isOwner(userId);
+      }
+    }
+  }
+}

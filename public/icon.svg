@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="flowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7" />
+      <stop offset="50%" stop-color="#2563eb" />
+      <stop offset="100%" stop-color="#7c3aed" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#a855f7" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.35" />
+    </filter>
+  </defs>
+  <!-- Background with rounded rectangle for maskable safe zone -->
+  <rect width="512" height="512" rx="112" fill="url(#flowGrad)" />
+  
+  <!-- Outer glowing rings -->
+  <circle cx="256" cy="256" r="180" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="4" />
+  <circle cx="256" cy="256" r="150" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2" stroke-dasharray="8 8" />
+
+  <!-- Center Speech Bubble + Soundwaves / Flow shape -->
+  <g filter="url(#shadow)">
+    <!-- Speech bubble body -->
+    <path d="M150 160 C150 130, 174 106, 204 106 L308 106 C338 106, 362 130, 362 160 L362 270 C362 300, 338 324, 308 324 L224 324 L170 368 L178 324 L150 324 C120 324, 120 300, 150 300 Z" fill="#ffffff" />
+    
+    <!-- Stylized Flow Waves inside speech bubble -->
+    <path d="M190 215 C210 185, 230 245, 256 215 C282 185, 302 245, 322 215" fill="none" stroke="url(#flowGrad)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" />
+    
+    <!-- AI Sparkle / Star on top right of bubble -->
+    <path d="M336 120 Q350 120 350 106 Q350 120 364 120 Q350 120 350 134 Q350 120 336 120 Z" fill="#38bdf8" />
+    <path d="M160 140 Q170 140 170 130 Q170 140 180 140 Q170 140 170 150 Q170 140 160 140 Z" fill="#a855f7" />
+  </g>
+  
+  <!-- Subtitle Text -->
+  <text x="256" y="440" text-anchor="middle" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="36" font-weight="800" letter-spacing="3">ENGLISHFLOW</text>
+  <text x="256" y="475" text-anchor="middle" fill="#93c5fd" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="600" letter-spacing="5">AI TUTOR</text>
+</svg>

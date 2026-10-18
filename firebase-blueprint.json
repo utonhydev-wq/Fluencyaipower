@@ -1,0 +1,197 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Perfil do aluno, preferências de estudo e configurações gerais.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "UID exclusivo do Firebase Auth" },
+        "name": { "type": "string", "maxLength": 100, "description": "Nome completo ou apelido do usuário" },
+        "email": { "type": "string", "maxLength": 255, "description": "E-mail de cadastro" },
+        "avatarUrl": { "type": "string", "maxLength": 1000, "description": "URL da foto de perfil" },
+        "level": { "type": "string", "enum": ["A1", "A2", "B1", "B2", "C1", "C2"], "description": "Nível estimado CEFR" },
+        "levelTitle": { "type": "string", "maxLength": 100, "description": "Título descritivo do nível" },
+        "primaryGoal": { "type": "string", "enum": ["viagens", "trabalho", "estudos", "tecnologia", "conversas_gerais"], "description": "Objetivo principal do estudo" },
+        "dailyMinutes": { "type": "number", "description": "Tempo diário selecionado: 10, 15, 20 ou 25 min" },
+        "learningStyle": { "type": "string", "enum": ["conversacao", "audio_video", "jogos", "leitura", "combinacao"], "description": "Estilo preferido de aprendizagem" },
+        "mainDifficulty": { "type": "string", "enum": ["falar", "ouvir", "ler", "escrever", "vocabulario", "gramatica"], "description": "Maior dificuldade atual" },
+        "interfaceLanguage": { "type": "string", "maxLength": 10, "description": "Idioma da interface, padrão pt-BR" },
+        "soundEffects": { "type": "boolean", "description": "Se os efeitos sonoros estão ativos" },
+        "voicePlaybackSpeed": { "type": "number", "description": "Velocidade padrão de áudio: 0.75, 1.0 ou 1.25" },
+        "preferredAccent": { "type": "string", "enum": ["US", "UK"], "description": "Sotaque de preferência" },
+        "theme": { "type": "string", "enum": ["dark", "light"], "description": "Tema da interface" },
+        "timezone": { "type": "string", "maxLength": 50, "description": "Fuso horário do usuário" },
+        "onboardingCompleted": { "type": "boolean", "description": "Se completou onboarding inicial" },
+        "createdAt": { "type": "string", "description": "Data de criação em ISO 8601" },
+        "updatedAt": { "type": "string", "description": "Data da última atualização em ISO 8601" },
+        "lastActivity": { "type": "string", "description": "Data/hora da última atividade registrada" }
+      },
+      "required": ["uid", "name", "email", "level", "dailyMinutes", "createdAt"]
+    },
+    "ProgressSummary": {
+      "title": "ProgressSummary",
+      "description": "Resumo global do progresso e competências do aluno.",
+      "type": "object",
+      "properties": {
+        "level": { "type": "string", "enum": ["A1", "A2", "B1", "B2", "C1", "C2"], "description": "Nível atual" },
+        "completedLessonsCount": { "type": "number", "description": "Total de lições concluídas" },
+        "totalMinutesStudied": { "type": "number", "description": "Minutos totais estudados" },
+        "activeDaysCount": { "type": "number", "description": "Total de dias ativos" },
+        "currentStreak": { "type": "number", "description": "Sequência atual de dias" },
+        "highestStreak": { "type": "number", "description": "Maior sequência alcançada" },
+        "xp": { "type": "number", "description": "XP total acumulado" },
+        "accuracyRate": { "type": "number", "description": "Taxa de acerto global em porcentagem" },
+        "readingScore": { "type": "number", "description": "Pontuação estimada em leitura (0-100)" },
+        "writingScore": { "type": "number", "description": "Pontuação estimada em escrita (0-100)" },
+        "speakingScore": { "type": "number", "description": "Pontuação estimada em fala/pronúncia (0-100)" },
+        "listeningScore": { "type": "number", "description": "Pontuação estimada em escuta (0-100)" },
+        "grammarScore": { "type": "number", "description": "Pontuação estimada em gramática (0-100)" },
+        "vocabularyScore": { "type": "number", "description": "Pontuação estimada em vocabulário (0-100)" },
+        "lastReviewDate": { "type": "string", "description": "Data da última revisão" },
+        "updatedAt": { "type": "string", "description": "Data de atualização" }
+      },
+      "required": ["level", "xp", "currentStreak", "completedLessonsCount"]
+    },
+    "LessonProgress": {
+      "title": "LessonProgress",
+      "description": "Registro de status e desempenho de uma aula específica.",
+      "type": "object",
+      "properties": {
+        "lessonId": { "type": "string", "maxLength": 100, "description": "Identificador da aula" },
+        "status": { "type": "string", "enum": ["not_started", "in_progress", "completed"], "description": "Status da lição" },
+        "score": { "type": "number", "description": "Pontos/acertos obtidos" },
+        "maxScore": { "type": "number", "description": "Pontuação máxima da aula" },
+        "timeSpentMinutes": { "type": "number", "description": "Minutos dedicados à aula" },
+        "attemptsCount": { "type": "number", "description": "Tentativas realizadas" },
+        "startedAt": { "type": "string", "description": "Início da aula" },
+        "completedAt": { "type": "string", "description": "Conclusão da aula" },
+        "updatedAt": { "type": "string", "description": "Última atualização" }
+      },
+      "required": ["lessonId", "status", "score", "maxScore"]
+    },
+    "VocabularyItem": {
+      "title": "VocabularyItem",
+      "description": "Item de vocabulário gerenciado pelo sistema de repetição espaçada (SRS).",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 100, "description": "ID único da palavra/expressão" },
+        "english": { "type": "string", "maxLength": 200, "description": "Termo em inglês" },
+        "portuguese": { "type": "string", "maxLength": 300, "description": "Significado em português" },
+        "phonetic": { "type": "string", "maxLength": 100, "description": "Transcrição fonética IPA" },
+        "partOfSpeech": { "type": "string", "maxLength": 50, "description": "Classe gramatical" },
+        "exampleSentence": { "type": "string", "maxLength": 500, "description": "Frase de exemplo" },
+        "exampleTranslation": { "type": "string", "maxLength": 500, "description": "Tradução da frase de exemplo" },
+        "category": { "type": "string", "maxLength": 50, "description": "Categoria temática" },
+        "level": { "type": "string", "enum": ["A1", "A2", "B1", "B2", "C1", "C2"], "description": "Nível CEFR" },
+        "isFavorite": { "type": "boolean", "description": "Se está nos favoritos" },
+        "intervalDays": { "type": "number", "description": "Intervalo do SRS em dias" },
+        "repetitionCount": { "type": "number", "description": "Quantidade de repetições bem-sucedidas" },
+        "easeFactor": { "type": "number", "description": "Fator de facilidade SM-2" },
+        "nextReviewDate": { "type": "string", "description": "Próxima data de revisão agendada" },
+        "lastReviewedDate": { "type": "string", "description": "Data da última revisão" },
+        "difficultyScore": { "type": "string", "enum": ["facil", "bom", "dificil", "repetir", "novo"], "description": "Última avaliação do aluno" },
+        "mistakeCount": { "type": "number", "description": "Contagem de erros" },
+        "updatedAt": { "type": "string", "description": "Data de atualização" }
+      },
+      "required": ["id", "english", "portuguese", "intervalDays", "nextReviewDate"]
+    },
+    "ActivityRecord": {
+      "title": "ActivityRecord",
+      "description": "Registro no histórico de atividades de estudo do usuário.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 100, "description": "ID do registro" },
+        "type": { "type": "string", "enum": ["lesson", "review", "roleplay", "pronunciation", "placement"], "description": "Tipo de atividade" },
+        "title": { "type": "string", "maxLength": 200, "description": "Título descritivo da atividade" },
+        "relatedId": { "type": "string", "maxLength": 100, "description": "ID da lição ou cenário associado" },
+        "durationMinutes": { "type": "number", "description": "Duração em minutos" },
+        "score": { "type": "number", "description": "Pontuação ou taxa de acerto obtida" },
+        "xpEarned": { "type": "number", "description": "XP conquistado nesta atividade" },
+        "skillPracticed": { "type": "string", "maxLength": 50, "description": "Competência principal exercitada" },
+        "timestamp": { "type": "string", "description": "Data e hora de realização" }
+      },
+      "required": ["id", "type", "title", "durationMinutes", "xpEarned", "timestamp"]
+    },
+    "DailyStat": {
+      "title": "DailyStat",
+      "description": "Estatísticas diárias agregadas do aluno.",
+      "type": "object",
+      "properties": {
+        "date": { "type": "string", "maxLength": 20, "description": "Data no formato YYYY-MM-DD" },
+        "minutesStudied": { "type": "number", "description": "Minutos estudados no dia" },
+        "lessonsCompleted": { "type": "number", "description": "Aulas finalizadas no dia" },
+        "exercisesCompleted": { "type": "number", "description": "Exercícios respondidos" },
+        "correctCount": { "type": "number", "description": "Total de acertos" },
+        "mistakeCount": { "type": "number", "description": "Total de erros" },
+        "xpEarned": { "type": "number", "description": "XP ganho no dia" },
+        "goalReached": { "type": "boolean", "description": "Se atingiu a meta diária estipulada" }
+      },
+      "required": ["date", "minutesStudied", "xpEarned"]
+    },
+    "UserAchievement": {
+      "title": "UserAchievement",
+      "description": "Registro de conquista desbloqueada pelo aluno.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 100, "description": "Identificador da conquista" },
+        "title": { "type": "string", "maxLength": 150, "description": "Título da conquista" },
+        "description": { "type": "string", "maxLength": 300, "description": "Descrição do feito" },
+        "icon": { "type": "string", "maxLength": 50, "description": "Nome do ícone" },
+        "xpReward": { "type": "number", "description": "Recompensa em XP" },
+        "isUnlocked": { "type": "boolean", "description": "Se está desbloqueada" },
+        "unlockedAt": { "type": "string", "description": "Data de desbloqueio" }
+      },
+      "required": ["id", "title", "xpReward", "isUnlocked"]
+    },
+    "ConversationRecord": {
+      "title": "ConversationRecord",
+      "description": "Registro resumido de simulações de conversação (roleplay).",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 100, "description": "ID da conversa" },
+        "scenarioId": { "type": "string", "maxLength": 100, "description": "ID do cenário praticado" },
+        "scenarioTitle": { "type": "string", "maxLength": 200, "description": "Título do cenário" },
+        "difficultyLevel": { "type": "string", "enum": ["A1", "A2", "B1", "B2", "C1", "C2"], "description": "Nível de dificuldade" },
+        "summary": { "type": "string", "maxLength": 1000, "description": "Resumo pedagógico da sessão" },
+        "strengths": { "type": "string", "maxLength": 500, "description": "Pontos fortes demonstrados" },
+        "improvements": { "type": "string", "maxLength": 500, "description": "Sugestões de melhoria" },
+        "timestamp": { "type": "string", "description": "Data e hora da conversa" }
+      },
+      "required": ["id", "scenarioId", "scenarioTitle", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Documento raiz do aluno contendo dados cadastrais, nível CEFR e preferências."
+    },
+    "/users/{userId}/progress/summary": {
+      "schema": "ProgressSummary",
+      "description": "Resumo acumulado do progresso de aprendizagem, XP, sequência e competências."
+    },
+    "/users/{userId}/lessonProgress/{lessonId}": {
+      "schema": "LessonProgress",
+      "description": "Acompanhamento detalhado do progresso em cada aula do currículo."
+    },
+    "/users/{userId}/vocabulary/{wordId}": {
+      "schema": "VocabularyItem",
+      "description": "Cartões de vocabulário e agendamento da repetição espaçada (SRS)."
+    },
+    "/users/{userId}/activityHistory/{activityId}": {
+      "schema": "ActivityRecord",
+      "description": "Histórico resumido das atividades de estudo realizadas."
+    },
+    "/users/{userId}/dailyStats/{date}": {
+      "schema": "DailyStat",
+      "description": "Estatísticas diárias agregadas de estudo, tempo e metas."
+    },
+    "/users/{userId}/achievements/{achievementId}": {
+      "schema": "UserAchievement",
+      "description": "Conquistas e insígnias desbloqueadas pelo estudante."
+    },
+    "/users/{userId}/conversationHistory/{conversationId}": {
+      "schema": "ConversationRecord",
+      "description": "Registros pedagógicos das simulações de conversação com IA."
+    }
+  }
+}
