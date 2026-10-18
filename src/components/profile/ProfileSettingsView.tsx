@@ -354,6 +354,30 @@ export const ProfileSettingsView: React.FC<ProfileSettingsViewProps> = ({
         </div>
       )}
 
+      {/* Brand & System Information */}
+      <div className="p-6 rounded-3xl bg-slate-900/60 border border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-2xl bg-slate-950 border border-slate-800 p-1 flex items-center justify-center overflow-hidden shadow-md">
+            <img
+              src="https://i.postimg.cc/nh6qbwQ8/upscalemedia-transformed.png"
+              alt="fluencyaipower logo"
+              className="w-full h-full object-contain"
+              onError={(e) => {
+                const target = e.currentTarget;
+                if (!target.src.endsWith('/logo.png')) target.src = '/logo.png';
+              }}
+            />
+          </div>
+          <div>
+            <h4 className="text-sm font-black text-white lowercase">fluencyaipower</h4>
+            <p className="text-[11px] text-slate-400">Inteligência Artificial & Ensino de Idiomas</p>
+          </div>
+        </div>
+        <div className="text-[11px] text-slate-400 font-mono">
+          <span>v1.0.0 • Google Gemini & Cloud Firestore</span>
+        </div>
+      </div>
+
     </div>
   );
 };

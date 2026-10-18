@@ -4,7 +4,7 @@ export const INITIAL_ACHIEVEMENTS: Achievement[] = [
   {
     id: 'ach-first-step',
     title: 'Primeiros Passos',
-    description: 'Conclua sua primeira lição interativa no EnglishFlow.',
+    description: 'Conclua sua primeira lição interativa no fluencyaipower.',
     icon: 'Sparkles',
     xpReward: 50,
     isUnlocked: false,

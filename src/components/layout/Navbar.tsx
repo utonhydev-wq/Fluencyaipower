@@ -37,17 +37,24 @@ export const Navbar: React.FC<NavbarProps> = ({
           onClick={() => onNavigate('dashboard')}
           className="flex items-center gap-2.5 cursor-pointer group"
         >
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-sky-500/20 group-hover:scale-105 transition">
-            <Sparkles className="w-5 h-5" />
+          <div className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center overflow-hidden shadow-md shadow-sky-500/10 group-hover:scale-105 transition">
+            <img
+              src="https://i.postimg.cc/nh6qbwQ8/upscalemedia-transformed.png"
+              alt="fluencyaipower logo"
+              className="w-full h-full object-contain p-0.5"
+              onError={(e) => {
+                const target = e.currentTarget;
+                if (!target.src.endsWith('/logo.png')) {
+                  target.src = '/logo.png';
+                }
+              }}
+            />
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="text-base font-black tracking-tight text-white">EnglishFlow</span>
-              <span className="text-[10px] font-black px-1.5 py-0.2 rounded bg-sky-500/20 text-sky-400 border border-sky-500/30">
-                AI
-              </span>
+              <span className="text-base font-black tracking-tight text-white lowercase">fluencyaipower</span>
             </div>
-            <span className="text-[10px] text-slate-400 -mt-1 block font-medium hidden sm:block">
+            <span className="text-[10px] text-slate-400 -mt-0.5 block font-medium hidden sm:block">
               Zero ao Avançado • CEFR {userProfile.level}
             </span>
           </div>

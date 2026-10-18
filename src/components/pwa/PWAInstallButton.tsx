@@ -17,7 +17,7 @@ export const PWAInstallButton: React.FC = () => {
       <button
         onClick={install}
         className="flex items-center gap-1.5 rounded-lg bg-sky-600/90 hover:bg-sky-500 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition active:scale-95"
-        title="Instalar EnglishFlow AI no seu dispositivo"
+        title="Instalar fluencyaipower no seu dispositivo"
       >
         <Download className="w-3.5 h-3.5" />
         <span className="hidden sm:inline">Instalar App</span>

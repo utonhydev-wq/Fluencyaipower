@@ -160,13 +160,21 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete }) 
         {/* STEP 1: INTRO */}
         {step === 'intro' && (
           <div className="text-center space-y-6 animate-in fade-in zoom-in-95 duration-200">
-            <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/20">
-              <Sparkles className="w-8 h-8 text-white" />
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-center p-1.5 shadow-lg shadow-sky-500/20">
+              <img
+                src="https://i.postimg.cc/nh6qbwQ8/upscalemedia-transformed.png"
+                alt="fluencyaipower logo"
+                className="w-full h-full object-contain"
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  if (!target.src.endsWith('/logo.png')) target.src = '/logo.png';
+                }}
+              />
             </div>
 
             <div>
-              <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20 mb-3">
-                Bem-vindo ao EnglishFlow AI
+              <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20 mb-3 lowercase font-mono">
+                bem-vindo ao fluencyaipower
               </span>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
                 Aprenda inglês do zero ao avançado no seu próprio ritmo
@@ -210,7 +218,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete }) 
             <div>
               <span className="text-xs font-bold uppercase tracking-wider text-sky-400">Passo 1 de 2</span>
               <h3 className="text-xl sm:text-2xl font-bold text-white mt-1">Configure suas preferências</h3>
-              <p className="text-xs sm:text-sm text-slate-400 mt-1">Isso ajuda o EnglishFlow a calibrar os exemplos e o ritmo das suas lições.</p>
+              <p className="text-xs sm:text-sm text-slate-400 mt-1">Isso ajuda o fluencyaipower a calibrar os exemplos e o ritmo das suas lições.</p>
             </div>
 
             <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
@@ -507,7 +515,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete }) 
               onClick={() => finishOnboarding()}
               className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-bold text-sm shadow-xl shadow-sky-600/30 transition active:scale-[0.98]"
             >
-              Começar Minha Jornada no EnglishFlow
+              Começar Minha Jornada no fluencyaipower
             </button>
           </div>
         )}

@@ -104,11 +104,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
         {/* Modal Brand Header */}
         <div className="text-center space-y-2 mb-6">
-          <div className="w-12 h-12 mx-auto rounded-2xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/20 text-white">
-            <Sparkles className="w-6 h-6" />
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-center p-1.5 shadow-lg shadow-sky-500/20">
+            <img
+              src="https://i.postimg.cc/nh6qbwQ8/upscalemedia-transformed.png"
+              alt="fluencyaipower logo"
+              className="w-full h-full object-contain"
+              onError={(e) => {
+                const target = e.currentTarget;
+                if (!target.src.endsWith('/logo.png')) target.src = '/logo.png';
+              }}
+            />
           </div>
           <h2 className="text-xl sm:text-2xl font-black text-white">
-            {mode === 'login' ? 'Entrar no EnglishFlow AI' : mode === 'register' ? 'Criar sua Conta' : 'Recuperar Senha'}
+            {mode === 'login' ? 'Entrar no fluencyaipower' : mode === 'register' ? 'Criar Conta no fluencyaipower' : 'Recuperar Senha'}
           </h2>
           <p className="text-xs text-slate-400">
             {mode === 'login'

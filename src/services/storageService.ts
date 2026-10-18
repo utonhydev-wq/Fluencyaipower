@@ -10,7 +10,7 @@ const ACHIEVEMENTS_KEY = 'englishflow_achievements_v1';
 export const DEFAULT_USER_PROFILE: UserProfile = {
   id: 'usr_' + Date.now(),
   name: 'Estudante',
-  email: 'aluno@englishflow.ai',
+  email: 'aluno@fluencyaipower.com',
   avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80',
   level: 'A1',
   levelTitle: 'Iniciante (A1) — Primeiros Passos',
@@ -271,7 +271,7 @@ export const storageService = {
       flashcards: this.getFlashcards(),
       achievements: this.getAchievements(),
       exportedAt: new Date().toISOString(),
-      appVersion: 'EnglishFlow AI v1.0.0',
+      appVersion: 'fluencyaipower v1.0.0',
     };
     return JSON.stringify(backup, null, 2);
   },

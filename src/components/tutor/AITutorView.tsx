@@ -99,14 +99,14 @@ export const AITutorView: React.FC<AITutorViewProps> = ({ userProfile }) => {
     {
       id: 'init-msg',
       role: 'assistant',
-      text: `Hello ${userProfile.name}! I am ${TEACHERS[0].name}, your personal English professor on EnglishFlow AI. 
+      text: `Hello ${userProfile.name}! I am ${TEACHERS[0].name}, your personal English professor on fluencyaipower. 
 
 I'm here to guide your journey from your current level (${userProfile.level}) to complete confidence. We will work on pronunciation, natural sentences, and practical speaking without fear of making mistakes.
 
 What would you like to explore today? You can ask a grammar doubt in Portuguese, practice a daily dialogue in English, or test your pronunciation!`,
       timestamp: 'Agora',
       data: {
-        reply: `Hello ${userProfile.name}! I am ${TEACHERS[0].name}, your personal English professor on EnglishFlow AI.`,
+        reply: `Hello ${userProfile.name}! I am ${TEACHERS[0].name}, your personal English professor on fluencyaipower.`,
         portugueseExplanation: 'Eu sou o seu professor particular. Você pode falar comigo em português se tiver dúvidas ou praticar em inglês diretamente. Sempre que houver um jeito mais natural de falar, eu darei dicas gentis e fonéticas!',
         suggestedFollowUps: [
           'How can I improve my English speaking every day?',

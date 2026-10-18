@@ -14,9 +14,9 @@ export default defineConfig(() => {
         includeAssets: ['favicon.ico', 'icon.svg', 'apple-touch-icon.png'],
         manifest: {
           id: '/',
-          name: 'EnglishFlow AI',
-          short_name: 'EnglishFlow',
-          description: 'Aprenda inglês do zero ao avançado com inteligência artificial, conversação e repetição espaçada.',
+          name: 'fluencyaipower',
+          short_name: 'fluencyaipower',
+          description: 'Aprenda inglês do zero ao avançado com fluencyaipower, inteligência artificial, conversação e repetição espaçada.',
           theme_color: '#0284c7',
           background_color: '#0f172a',
           display: 'standalone',
@@ -54,7 +54,7 @@ export default defineConfig(() => {
     ],
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, '.'),
+        '@': path.resolve('.'),
       },
     },
     server: {

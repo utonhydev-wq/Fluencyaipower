@@ -34,6 +34,6 @@
   </g>
   
   <!-- Subtitle Text -->
-  <text x="256" y="440" text-anchor="middle" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="36" font-weight="800" letter-spacing="3">ENGLISHFLOW</text>
-  <text x="256" y="475" text-anchor="middle" fill="#93c5fd" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="600" letter-spacing="5">AI TUTOR</text>
+  <text x="256" y="440" text-anchor="middle" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="900" letter-spacing="1">fluencyaipower</text>
+  <text x="256" y="475" text-anchor="middle" fill="#93c5fd" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" letter-spacing="4">ENGLISH AI</text>
 </svg>

@@ -64,7 +64,7 @@ app.post('/api/ai/tutor', async (req: Request, res: Response) => {
       teacherPersona = 'Adam'
     } = req.body;
 
-    const systemPrompt = `Você é um Professor Particular de Inglês de Elite (certificado Cambridge CELTA/Delta) do EnglishFlow AI, especializado em ensinar falantes nativos de português brasileiro do nível A1 ao C2.
+    const systemPrompt = `Você é um Professor Particular de Inglês de Elite (certificado Cambridge CELTA/Delta) do fluencyaipower, especializado em ensinar falantes nativos de português brasileiro do nível A1 ao C2.
 Seu perfil: Professor ${teacherPersona}, empático, didático, focado em destravar a fala e acelerar a fluência sem decoreba inútil.
 Nível CEFR do aluno: ${level}.
 Objetivo do aluno: ${userGoal}.
@@ -156,7 +156,7 @@ app.post('/api/ai/roleplay', async (req: Request, res: Response) => {
   try {
     const { scenarioId, scenarioTitle, role, history = [], userMessage, level = 'A1' } = req.body;
 
-    const systemPrompt = `Você é um personagem nativo no cenário de simulação "${scenarioTitle}" do EnglishFlow AI.
+    const systemPrompt = `Você é um personagem nativo no cenário de simulação "${scenarioTitle}" do fluencyaipower.
 Seu papel na cena: ${role}.
 Nível do aluno: ${level}.
 Você deve responder EM FORMATO JSON estrito com o seguinte esquema:
@@ -364,7 +364,7 @@ app.post('/api/ai/evaluate-level', async (req: Request, res: Response) => {
     const { answers, score, totalQuestions, userSelfRating, goal, dailyMinutes } = req.body;
 
     const systemPrompt = `Você é um avaliador pedagógico de proficiência de língua inglesa com base no CEFR (A1, A2, B1, B2, C1, C2).
-Analise o desempenho do aluno no teste de nivelamento do EnglishFlow AI e formule uma avaliação motivadora.
+Analise o desempenho do aluno no teste de nivelamento do fluencyaipower e formule uma avaliação motivadora.
 Retorne em JSON estrito com o esquema:
 {
   "estimatedLevel": "A1" | "A2" | "B1" | "B2" | "C1" | "C2",
@@ -435,7 +435,7 @@ async function startServer() {
   }
 
   app.listen(port, '0.0.0.0', () => {
-    console.log(`EnglishFlow AI Server running at http://0.0.0.0:${port}`);
+    console.log(`fluencyaipower Server running at http://0.0.0.0:${port}`);
   });
 }
 

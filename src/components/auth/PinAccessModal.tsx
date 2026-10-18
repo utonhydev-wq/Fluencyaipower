@@ -124,9 +124,22 @@ export const PinAccessModal: React.FC<PinAccessModalProps> = ({
           )}
         </div>
 
-        {/* Lock Icon */}
-        <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-sky-500/20 to-indigo-500/20 border border-sky-500/30 flex items-center justify-center text-sky-400 mb-3 shadow-inner">
-          <KeyRound className="w-8 h-8" />
+        {/* Brand Logo & Lock Indicator */}
+        <div className="relative mb-3">
+          <div className="w-16 h-16 rounded-2xl bg-slate-950 border border-slate-800 p-1.5 shadow-lg shadow-sky-500/20 flex items-center justify-center overflow-hidden">
+            <img
+              src="https://i.postimg.cc/nh6qbwQ8/upscalemedia-transformed.png"
+              alt="fluencyaipower logo"
+              className="w-full h-full object-contain"
+              onError={(e) => {
+                const target = e.currentTarget;
+                if (!target.src.endsWith('/logo.png')) target.src = '/logo.png';
+              }}
+            />
+          </div>
+          <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-sky-500 text-white flex items-center justify-center border-2 border-slate-900 shadow">
+            <KeyRound className="w-3.5 h-3.5" />
+          </div>
         </div>
 
         {/* Header Text */}
@@ -135,11 +148,11 @@ export const PinAccessModal: React.FC<PinAccessModalProps> = ({
             ? `Bem-vindo de volta, ${userName}!`
             : step === 'create_confirm'
             ? 'Confirme seu PIN de 4 Dígitos'
-            : 'Crie seu PIN de Acesso Rápido'}
+            : 'PIN de Acesso — fluencyaipower'}
         </h2>
         <p className="text-xs text-slate-400 text-center mt-1 mb-5 max-w-[240px]">
           {savedPin
-            ? 'Digite seu PIN de 4 números para desbloquear seus estudos sincronizados.'
+            ? 'Digite seu PIN de 4 números para desbloquear seus estudos no fluencyaipower.'
             : step === 'create_confirm'
             ? 'Digite os mesmos 4 números para confirmar.'
             : 'Crie um código de 4 números para entrar rápido pelo celular.'}
