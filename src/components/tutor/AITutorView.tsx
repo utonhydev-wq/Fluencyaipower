@@ -5,6 +5,8 @@ import { speechService } from '../../services/speechService';
 import { soundService } from '../../services/soundService';
 import { storageService } from '../../services/storageService';
 import { reviewService } from '../../services/reviewService';
+import { conversationService } from '../../services/conversationService';
+import { progressService } from '../../services/progressService';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   Send,
@@ -184,6 +186,33 @@ What would you like to explore today? You can ask a grammar doubt in Portuguese,
       setMessages(prev => [...prev, aiMsg]);
       soundService.playCorrect();
 
+      // Persist to Cloud Firestore when user is authenticated
+      if (currentUser?.uid) {
+        // 1. Record daily study stats and XP
+        progressService.recordDailyStudy(currentUser.uid, {
+          minutesToAdd: 2,
+          exercisesToAdd: 1,
+          correctToAdd: response.correction ? 0 : 1,
+          mistakesToAdd: response.correction ? 1 : 0,
+          xpToAdd: 15,
+          dailyGoalMinutes: userProfile.preferences.dailyMinutes || 15
+        }).catch(err => console.warn('Could not record daily study stats:', err));
+
+        // 2. Save conversation session in Firestore subcollection users/{uid}/conversationHistory
+        conversationService.saveConversation(currentUser.uid, {
+          id: 'tutor_' + Date.now(),
+          scenarioId: `tutor_${selectedTeacher.name.toLowerCase()}`,
+          scenarioTitle: `Aula com Prof. ${selectedTeacher.name}`,
+          difficultyLevel: userProfile.level,
+          summary: response.correction
+            ? `Correção: "${response.correction.originalText}" -> "${response.correction.correctedText}"`
+            : `Prática de conversação (${tutorMode})`,
+          strengths: response.correction ? 'Prática ativa e vocabulário' : 'Excelente fala e estrutura',
+          improvements: response.phoneticTip || 'Revisar cartões de vocabulário',
+          timestamp: new Date().toISOString()
+        }).catch(err => console.warn('Could not save conversation record:', err));
+      }
+
       // Play audio automatically if configured
       if (userProfile.preferences?.autoPlayAudio) {
         playAudio(response.reply);
@@ -295,6 +324,10 @@ What would you like to explore today? You can ask a grammar doubt in Portuguese,
                 <h2 className="text-sm font-bold text-white leading-tight">{selectedTeacher.name}</h2>
                 <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-sky-500/20 text-sky-400 border border-sky-500/30">
                   {selectedTeacher.accent}
+                </span>
+                <span className="hidden sm:inline-flex text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  Gemini + Firebase
                 </span>
               </div>
               <p className="text-[11px] text-slate-400 line-clamp-1">{selectedTeacher.title}</p>

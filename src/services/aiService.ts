@@ -1,10 +1,27 @@
 import { TutorResponseData } from '../types';
 import { speechService } from './speechService';
+import { auth } from '../lib/firebase';
 
 export interface TutorMessage {
   role: 'user' | 'assistant';
   text: string;
   data?: TutorResponseData;
+}
+
+async function getAuthHeaders(): Promise<Record<string, string>> {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  try {
+    const user = auth.currentUser;
+    if (user) {
+      const token = await user.getIdToken();
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+    }
+  } catch (err) {
+    console.warn('Could not retrieve Firebase auth token:', err);
+  }
+  return headers;
 }
 
 export const aiService = {
@@ -15,11 +32,13 @@ export const aiService = {
     mode?: 'iniciante' | 'imersao' | 'conversacao';
     userGoal?: string;
     teacherPersona?: string;
+    saveToDatabase?: boolean;
   }): Promise<TutorResponseData> {
     try {
+      const headers = await getAuthHeaders();
       const res = await fetch('/api/ai/tutor', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(params),
       });
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
@@ -34,17 +53,33 @@ export const aiService = {
         suggestedFollowUps: [
           "Can you give me an example?",
           "How do I pronounce this correctly?",
-          "Let's practice another phrase."
+          "Let's practice another phrase.",
         ],
         savedVocabulary: [
           {
             word: "Step by step",
             translation: "Passo a passo",
             phonetic: "/step baɪ step/",
-            example: "You will achieve fluency step by step."
-          }
-        ]
+            example: "You will achieve fluency step by step.",
+          },
+        ],
       };
+    }
+  },
+
+  async getTutorHistory(limit = 10): Promise<any[]> {
+    try {
+      const headers = await getAuthHeaders();
+      const res = await fetch(`/api/ai/tutor/history?limit=${limit}`, {
+        method: 'GET',
+        headers,
+      });
+      if (!res.ok) return [];
+      const data = await res.json();
+      return data.conversations || [];
+    } catch (err) {
+      console.warn('Failed to load tutor history:', err);
+      return [];
     }
   },
 
@@ -57,9 +92,10 @@ export const aiService = {
     level?: string;
   }) {
     try {
+      const headers = await getAuthHeaders();
       const res = await fetch('/api/ai/roleplay', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(params),
       });
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
@@ -73,9 +109,9 @@ export const aiService = {
         suggestedReplies: [
           "Yes, sure. Here are the details.",
           "I need help with this reservation, please.",
-          "Could you give me a recommendation?"
+          "Could you give me a recommendation.",
         ],
-        vocabularyTip: "Usar 'Could you...' ou 'May I...' soa natural e muito educado em inglês."
+        vocabularyTip: "Usar 'Could you...' ou 'May I...' soa natural e muito educado em inglês.",
       };
     }
   },
@@ -86,9 +122,10 @@ export const aiService = {
     level?: string;
   }) {
     try {
+      const headers = await getAuthHeaders();
       const res = await fetch('/api/ai/analyze-speech', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(params),
       });
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
@@ -99,17 +136,17 @@ export const aiService = {
       const cleanRec = (params.recognizedText || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
       const isMatch = cleanTarget === cleanRec;
       return {
-        score: isMatch ? 96 : (cleanRec.length > 3 ? 80 : 60),
+        score: isMatch ? 96 : cleanRec.length > 3 ? 80 : 60,
         accuracy: isMatch ? 'excelente' : 'bom',
         recognized: params.recognizedText,
         target: params.targetPhrase,
         phoneticTip: "Dica para brasileiros: Em palavras terminadas em consoantes como 'd', 't' e 'k', evite colocar o som de 'i' no final. Termine com o som seco da consoante.",
-        wordAnalysis: (params.targetPhrase || '').split(' ').map(w => ({
+        wordAnalysis: (params.targetPhrase || '').split(' ').map((w) => ({
           word: w,
           status: 'correct',
-          hint: 'Pronúncia clara'
+          hint: 'Pronúncia clara',
         })),
-        encouragement: 'Ótima tentativa! Repetir em voz alta acelera sua fluência.'
+        encouragement: 'Ótima tentativa! Repetir em voz alta acelera sua fluência.',
       };
     }
   },
@@ -120,9 +157,10 @@ export const aiService = {
     type?: string;
   }) {
     try {
+      const headers = await getAuthHeaders();
       const res = await fetch('/api/ai/generate-exercise', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(params),
       });
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
@@ -139,7 +177,7 @@ export const aiService = {
         correctAnswer: 'drink',
         explanation: 'Com o pronome "I" no presente simples (ações habituais), usamos a forma base do verbo (drink).',
         translation: 'Eu sempre bebo café antes de começar a trabalhar.',
-        audioPhrase: 'I always drink coffee before starting work.'
+        audioPhrase: 'I always drink coffee before starting work.',
       };
     }
   },
@@ -153,9 +191,10 @@ export const aiService = {
     dailyMinutes: number;
   }) {
     try {
+      const headers = await getAuthHeaders();
       const res = await fetch('/api/ai/evaluate-level', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(params),
       });
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
@@ -165,9 +204,16 @@ export const aiService = {
       const ratio = params.score / (params.totalQuestions || 1);
       let level = 'A1';
       let title = 'Iniciante (A1) — Primeiros Passos';
-      if (ratio >= 0.8) { level = 'B2'; title = 'Intermediário Avançado (B2)'; }
-      else if (ratio >= 0.6) { level = 'B1'; title = 'Intermediário Independente (B1)'; }
-      else if (ratio >= 0.35) { level = 'A2'; title = 'Básico Cotidiano (A2)'; }
+      if (ratio >= 0.8) {
+        level = 'B2';
+        title = 'Intermediário Avançado (B2)';
+      } else if (ratio >= 0.6) {
+        level = 'B1';
+        title = 'Intermediário Independente (B1)';
+      } else if (ratio >= 0.35) {
+        level = 'A2';
+        title = 'Básico Cotidiano (A2)';
+      }
 
       return {
         estimatedLevel: level,
@@ -176,7 +222,7 @@ export const aiService = {
         strengths: ['Boa intuição gramatical', 'Compreensão de vocabulário chave'],
         focusAreas: ['Prática de conversação ativa', 'Fluência auditiva natural'],
         weeklyPlan: `Sua rotina diária de ${params.dailyMinutes} minutos combinará vocabulário novo, escuta e diálogos interativos com o tutor de IA.`,
-        startingModuleId: `${level.toLowerCase()}-mod-1`
+        startingModuleId: `${level.toLowerCase()}-mod-1`,
       };
     }
   },
@@ -184,5 +230,5 @@ export const aiService = {
   // Play audio either via server Gemini TTS or browser Web Speech
   playAudio(text: string, speed = 1.0) {
     speechService.speak(text, { speed });
-  }
+  },
 };
